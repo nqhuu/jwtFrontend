@@ -2,7 +2,7 @@ import { useHistory } from 'react-router-dom';
 import './Register.scss'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
+import { toast } from 'react-toastify';
 
 
 const Register = (props) => {
@@ -11,6 +11,7 @@ const Register = (props) => {
         history.push("/login")
     };
 
+    // tạo state như class với useState
     const [email, setmail] = useState("");
     const [phone, setPhone] = useState("");
     const [username, setUsername] = useState("");
@@ -18,34 +19,41 @@ const Register = (props) => {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     useEffect(() => {
-        // axios.get("http://localhost:8686/api/user")
-        //     .then((response) => {
-        //         console.log("==>>>>>>>>>> check data", response);
-        //     })
-        //     .catch((error) => {
-        //         console.error("Lỗi gọi API:", error);
-        //     });
+        axios.get("http://localhost:8686/api/user")
+            .then((response) => {
+                console.log("==>>>>>>>>>> check data", response);
+            })
+            .catch((error) => {
+                console.error("Lỗi gọi API:", error);
+            });
     }, []);
 
-    const validate = () => {
+    const isValidInputs = () => {
+        let valueCheck = { email, phone, username, password, confirmPassword };
 
-        if (email.includes('@') === false) {
-            alert("Email không hợp lệ");
-            return;
+        let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!regex.test(email)) {
+            toast.error("Email không hợp lệ");
+            return false;
         };
-        if (!email || !phone || !username || !password || !confirmPassword) {
-            alert("Vui lòng điền đầy đủ thông tin");
-            return;
-        };
+        for (let key in valueCheck) {
+            if (!valueCheck[key]) {
+                toast.error("Vui lòng điền đầy đủ thông tin");
+                return false;
+            }
+        }
         if (password !== confirmPassword) {
-            alert("Mật khẩu không khớp");
-            return;
+            toast.error("Mật khẩu không khớp");
+            return false;
         };
+        return true;
     }
 
     const handleRegister = async () => {
-        validate();
+        let validate = isValidInputs();
+        if (validate) {
 
+        }
     }
     return (
         <div className="register-container">
