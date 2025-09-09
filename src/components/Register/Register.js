@@ -11,15 +11,33 @@ const Register = (props) => {
         history.push("/login")
     };
 
-    // tạo state như class với useState
-    const [email, setmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    // ==============tạo state đơn lẻ với useState====================
+    // const [email, setmail] = useState("");
+    // const [phone, setPhone] = useState("");
+    // const [username, setUsername] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [confirmPassword, setConfirmPassword] = useState("");
+
+    // ==============tạo state với useState obj=======================
+    const [formData, setFormData] = useState({
+        email: "",
+        phone: "",
+        username: "",
+        password: "",
+        confirmPassword: ""
+    });
+    const defaultValidInput = {
+        email: true,
+        phone: true,
+        username: true,
+        password: true,
+        confirmPassword: true,
+    }
+    const [objCheckInput, setobjCheckInput] = useState(defaultValidInput)
+
 
     useEffect(() => {
-        axios.get("http://localhost:8686/api/user")
+        axios.get("http://localhost:8686/api/v1/user")
             .then((response) => {
                 console.log("==>>>>>>>>>> check data", response);
             })
@@ -29,30 +47,48 @@ const Register = (props) => {
     }, []);
 
     const isValidInputs = () => {
-        let valueCheck = { email, phone, username, password, confirmPassword };
+        let valueCheck = { ...formData };
+        setobjCheckInput(defaultValidInput)
 
         let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-        if (!regex.test(email)) {
+        if (!regex.test(valueCheck.email)) {
+            setobjCheckInput({ ...defaultValidInput, email: false })
             toast.error("Email không hợp lệ");
             return false;
         };
         for (let key in valueCheck) {
+            console.log()
             if (!valueCheck[key]) {
+                setobjCheckInput({ ...defaultValidInput, [key]: false })
                 toast.error("Vui lòng điền đầy đủ thông tin");
                 return false;
             }
         }
-        if (password !== confirmPassword) {
+        if (valueCheck.password !== valueCheck.confirmPassword) {
             toast.error("Mật khẩu không khớp");
             return false;
         };
         return true;
     }
 
+    const handleChange = (e) => {
+        let { name, value } = e.target
+        setFormData({
+            ...formData,
+            [name]: value
+        })
+    }
+
     const handleRegister = async () => {
         let validate = isValidInputs();
         if (validate) {
-
+            axios.post("http://localhost:8686/api/v1/register", { ...formData })
+                .then((response) => {
+                    console.log("==>>>>>>>>>> check data", response);
+                })
+                .catch((error) => {
+                    console.error("Lỗi gọi API:", error);
+                });
         }
     }
     return (
@@ -74,36 +110,46 @@ const Register = (props) => {
                         <div className='form-group'>
                             <label>Email:</label>
                             <input
-                                type="email" className="form-control" placeholder="Email address"
-                                value={email} onChange={(event) => setmail(event.target.value)}
+                                type="email" name='email'
+                                className={objCheckInput.email ? "form-control" : "form-control is-invalid"} placeholder="Email address"
+                                value={formData.email}
+                                onChange={(e) => handleChange(e)}
                             ></input>
                         </div>
                         <div className='form-group'>
                             <label>Phone number:</label>
                             <input
-                                type="text" className="form-control" placeholder="Phone number"
-                                value={phone} onChange={(event) => setPhone(event.target.value)}
+                                type="text" name='phone'
+                                className={objCheckInput.phone ? "form-control" : "form-control is-invalid"} placeholder="Phone number"
+                                value={formData.phone}
+                                onChange={(e) => handleChange(e)}
                             ></input>
                         </div>
                         <div className='form-group'>
                             <label>Usersname:</label>
                             <input
-                                type="text" className="form-control" placeholder="Usersname"
-                                value={username} onChange={(event) => setUsername(event.target.value)}
+                                type="text" name='username'
+                                className={objCheckInput.username ? "form-control" : "form-control is-invalid"} placeholder="Usersname"
+                                value={formData.username}
+                                onChange={(e) => handleChange(e)}
                             ></input>
                         </div>
                         <div className='form-group'>
                             <label>Password:</label>
                             <input
-                                type="password" className="form-control" placeholder="Password"
-                                value={password} onChange={(event) => setPassword(event.target.value)}
+                                type="password" name='password'
+                                className={objCheckInput.password ? "form-control" : "form-control is-invalid"} placeholder="Password"
+                                value={formData.password}
+                                onChange={(e) => handleChange(e)}
                             ></input>
                         </div>
                         <div className='form-group'>
                             <label>Re-enter Password:</label>
                             <input
-                                type="password" className="form-control" placeholder="Re-enter Password"
-                                value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)}
+                                type="password" name='confirmPassword'
+                                className={objCheckInput.confirmPassword ? "form-control" : "form-control is-invalid"} placeholder="Re-enter Password"
+                                value={formData.confirmPassword}
+                                onChange={(e) => handleChange(e)}
                             ></input>
                         </div>
                         <button className="btn btn-primary" onClick={() => handleRegister()}>Register</button>
