@@ -37,13 +37,13 @@ const Register = (props) => {
 
 
     useEffect(() => {
-        axios.get("http://localhost:8686/api/v1/user")
-            .then((response) => {
-                console.log("==>>>>>>>>>> check data", response);
-            })
-            .catch((error) => {
-                console.error("Lỗi gọi API:", error);
-            });
+        // axios.get("http://localhost:8686/api/v1/user")
+        //     .then((response) => {
+        //         console.log("==>>>>>>>>>> check data", response);
+        //     })
+        //     .catch((error) => {
+        //         console.error("Lỗi gọi API:", error);
+        //     });
     }, []);
 
     const isValidInputs = () => {
@@ -64,6 +64,11 @@ const Register = (props) => {
                 return false;
             }
         }
+        if (valueCheck.password.length < 6) {
+            setobjCheckInput({ ...defaultValidInput, password: false, confirmPassword: false })
+            toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+            return false;
+        }
         if (valueCheck.password !== valueCheck.confirmPassword) {
             toast.error("Mật khẩu không khớp");
             return false;
@@ -82,9 +87,24 @@ const Register = (props) => {
     const handleRegister = async () => {
         let validate = isValidInputs();
         if (validate) {
-            axios.post("http://localhost:8686/api/v1/register", { ...formData })
+            await axios.post("http://localhost:8686/api/v1/register", { ...formData })
                 .then((response) => {
-                    console.log("==>>>>>>>>>> check data", response);
+                    console.log("==>>>>>>>>>> check data", response.data);
+                    if (response && response.data.EC != 0) {
+                        toast.error(response.data.EM);
+                    }
+                    if (response && response.data.EC == 0) {
+                        toast.success(response.data.EM);
+                        setFormData({
+                            ...formData,
+                            email: "",
+                            phone: "",
+                            username: "",
+                            password: "",
+                            confirmPassword: ""
+                        })
+                        history.push("/login")
+                    }
                 })
                 .catch((error) => {
                     console.error("Lỗi gọi API:", error);
