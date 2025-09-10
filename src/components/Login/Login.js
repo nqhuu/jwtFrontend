@@ -1,11 +1,74 @@
 import './Login.scss'
 import { useHistory } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 
 
 const Login = (props) => {
     let history = useHistory()
     const handleCreateUser = () => {
         history.push("/registor")
+    }
+
+    const handleLogin = async () => {
+        let inputCheck = isValidInputs();
+        if (inputCheck) {
+            // call api
+            await axios.post("http://localhost:8686/api/v1/login", { ...formData })
+                .then((response) => {
+                    if (response && response.data.EC == 0) {
+                        toast.success(response.data.EM)
+                        // localStorage.setItem("user", JSON.stringify(response.data))
+                        // history.push("/")
+                    }
+                    if (response && response.data.EC != 0) {
+                        toast.error(response.data.EM)
+                    }
+                })
+                .catch((error) => {
+                    console.error("Lỗi gọi API:", error);
+                });
+        }
+
+    }
+
+
+    const [formData, setFormData] = useState({
+        valueInput: "",
+        password: ""
+    });
+
+    const defaultValidInput = {
+        valueInput: true,
+        password: true
+    }
+
+    const handleChange = (e) => {
+        let { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        })
+    }
+
+    const [objCheckInput, setobjCheckInput] = useState(defaultValidInput)
+
+    const isValidInputs = () => {
+        let valueCheck = { ...formData };
+        setobjCheckInput(defaultValidInput) // reset lai input ve true
+        if (!valueCheck.valueInput) {
+            setobjCheckInput({ ...defaultValidInput, valueInput: false })
+            toast.error("Bạn cần nhập Email hoặc Số điện thoại");
+            return false;
+        }
+        if (!valueCheck.password) {
+            setobjCheckInput({ ...defaultValidInput, password: false })
+            toast.error("Password không được để trống");
+            return false;
+        }
+        return true;
     }
 
     return (
@@ -24,9 +87,25 @@ const Login = (props) => {
                         <div className='brand d-sm-none'>
                             displays login
                         </div>
-                        <input type="text" className="form-control" placeholder="email address or phone number"></input>
-                        <input type="password" className="form-control" placeholder="Password"></input>
-                        <button className="btn btn-primary">Login</button>
+                        <input
+                            type="text"
+                            name='valueInput'
+                            className={objCheckInput.valueInput ? "form-control" : "form-control is-invalid"}
+                            placeholder="email address or phone number"
+                            value={formData.valueInput}
+                            onChange={(e) => handleChange(e)}
+                        ></input>
+                        <input
+                            type="password"
+                            name='password'
+                            className={objCheckInput.password ? "form-control" : "form-control is-invalid"}
+                            placeholder="Password"
+                            value={formData.password}
+                            onChange={(e) => handleChange(e)}></input>
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => handleLogin()}
+                        >Login</button>
                         <span className="text-center">
                             <a className="forgot-password" href="#">Forgotten your password?</a>
                         </span>

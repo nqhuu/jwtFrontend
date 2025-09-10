@@ -131,7 +131,8 @@ const Register = (props) => {
                             <label>Email:</label>
                             <input
                                 type="email" name='email'
-                                className={objCheckInput.email ? "form-control" : "form-control is-invalid"} placeholder="Email address"
+                                className={objCheckInput.email ? "form-control" : "form-control is-invalid"}
+                                placeholder="Email address"
                                 value={formData.email}
                                 onChange={(e) => handleChange(e)}
                             ></input>
@@ -140,7 +141,8 @@ const Register = (props) => {
                             <label>Phone number:</label>
                             <input
                                 type="text" name='phone'
-                                className={objCheckInput.phone ? "form-control" : "form-control is-invalid"} placeholder="Phone number"
+                                className={objCheckInput.phone ? "form-control" : "form-control is-invalid"}
+                                placeholder="Phone number"
                                 value={formData.phone}
                                 onChange={(e) => handleChange(e)}
                             ></input>
@@ -149,7 +151,8 @@ const Register = (props) => {
                             <label>Usersname:</label>
                             <input
                                 type="text" name='username'
-                                className={objCheckInput.username ? "form-control" : "form-control is-invalid"} placeholder="Usersname"
+                                className={objCheckInput.username ? "form-control" : "form-control is-invalid"}
+                                placeholder="Usersname"
                                 value={formData.username}
                                 onChange={(e) => handleChange(e)}
                             ></input>
@@ -158,7 +161,8 @@ const Register = (props) => {
                             <label>Password:</label>
                             <input
                                 type="password" name='password'
-                                className={objCheckInput.password ? "form-control" : "form-control is-invalid"} placeholder="Password"
+                                className={objCheckInput.password ? "form-control" : "form-control is-invalid"}
+                                placeholder="Password"
                                 value={formData.password}
                                 onChange={(e) => handleChange(e)}
                             ></input>
