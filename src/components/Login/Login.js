@@ -28,6 +28,7 @@ const Login = (props) => {
                         //lưu dữ liệu user xuống sessionStorage
                         sessionStorage.setItem("account", JSON.stringify(data))
                         history.push("/users")
+                        window.location.reload()
                     }
                     if (response && response.data && response.data.EC != 0) {
                         toast.error(response.data.EM)
@@ -40,7 +41,12 @@ const Login = (props) => {
 
     }
 
-
+    const handleEnter = async (e) => {
+        console.log(e)
+        if (e.keyCode === 13 && e.key === "Enter") {
+            handleLogin()
+        }
+    }
     const [formData, setFormData] = useState({
         valueInput: "",
         password: ""
@@ -107,6 +113,7 @@ const Login = (props) => {
                             className={objCheckInput.password ? "form-control" : "form-control is-invalid"}
                             placeholder="Password"
                             value={formData.password}
+                            onKeyDown={(e) => handleEnter(e)}
                             onChange={(e) => handleChange(e)}></input>
                         <button
                             className="btn btn-primary"
