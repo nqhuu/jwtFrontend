@@ -18,12 +18,18 @@ const Login = (props) => {
             // call api
             await axios.post("http://localhost:8686/api/v1/login", { ...formData })
                 .then((response) => {
-                    if (response && response.data.EC == 0) {
+                    if (response && response.data && response.data.EC == 0) {
                         toast.success(response.data.EM)
-                        // localStorage.setItem("user", JSON.stringify(response.data))
-                        // history.push("/")
+                        let data = {
+                            Authenticated: true,
+                            token: "fake token"
+                        }
+
+                        //lưu dữ liệu user xuống sessionStorage
+                        sessionStorage.setItem("account", JSON.stringify(data))
+                        history.push("/users")
                     }
-                    if (response && response.data.EC != 0) {
+                    if (response && response.data && response.data.EC != 0) {
                         toast.error(response.data.EM)
                     }
                 })
