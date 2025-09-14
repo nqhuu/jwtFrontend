@@ -44,6 +44,10 @@ const Register = (props) => {
         //     .catch((error) => {
         //         console.error("Lỗi gọi API:", error);
         //     });
+        let session = JSON.parse(sessionStorage.getItem("account"));
+        if (session) {
+            history.push("/")
+        }
     }, []);
 
     const isValidInputs = () => {

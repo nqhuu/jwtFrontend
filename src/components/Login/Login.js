@@ -7,7 +7,16 @@ import { toast } from 'react-toastify';
 
 
 const Login = (props) => {
+
     let history = useHistory()
+
+    useEffect(() => {
+        let session = JSON.parse(sessionStorage.getItem("account"));
+        if (session) {
+            history.push("/")
+        }
+    }, []);
+
     const handleCreateUser = () => {
         history.push("/registor")
     }
