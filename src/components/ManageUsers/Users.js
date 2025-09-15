@@ -2,10 +2,18 @@ import { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import "./Users.scss"
 import userService from '../../services/userService'
+import ReactPaginate from 'react-paginate';
 
 const Users = (props) => {
 
     let history = useHistory();
+    const limit = 2;
+    const [pageCount, setPageCount] = useState(0); // Tổng số trang
+    const [currentPage, setCurrentPage] = useState(1);  // Vị trí mục hiện tại
+    // const [itemsPerPage, setItemsPerPage] = useState(2); // Số mục hiển thị trên mỗi trang
+    // const [items, setItems] = useState([]);
+    let [listusers, setListUsers] = useState([]);
+
 
     useEffect(() => {
         //gọi dữ liệu dưới sessionStorage lên để validate đăng nhập
@@ -16,17 +24,21 @@ const Users = (props) => {
     }, []);
 
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        fetchUsers(limit, currentPage);
+    }, [currentPage]);
 
-    let [listusers, setListUsers] = useState([]);
-
-    let fetchUsers = async () => {
-        let response = await userService.fetchAllUsers();
-        if (response && response.data && response.data.EC === 0 && response.data.DT) {
-            // console.log('check response: ', response.data.DT);
-            setListUsers(response.data.DT);
+    let fetchUsers = async (limit, page) => {
+        let response = await userService.fetchAllUsers(limit, page);
+        if (response && response.data && response.data.EC === 0 && response.data.DT && response.data.DT.users) {
+            setListUsers(response.data.DT.users);
+            setPageCount(response.data.DT.totalPages);
         };
+    };
+
+    // Invoke when user click to request another page.
+    const handlePageClick = (event) => {
+        const newOffset = event.selected + 1; // Xác định vị trí mới
+        setCurrentPage(newOffset);
     };
 
 
@@ -83,6 +95,28 @@ const Users = (props) => {
                         </tbody>
                     </table>
                 </div >
+                <div className="uer-footer">
+                    <ReactPaginate
+                        nextLabel="next >"
+                        onPageChange={handlePageClick}
+                        pageRangeDisplayed={3}
+                        marginPagesDisplayed={2}
+                        pageCount={pageCount}
+                        previousLabel="< previous"
+                        pageClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousClassName="page-item"
+                        previousLinkClassName="page-link"
+                        nextClassName="page-item"
+                        nextLinkClassName="page-link"
+                        breakLabel="..."
+                        breakClassName="page-item"
+                        breakLinkClassName="page-link"
+                        containerClassName="pagination"
+                        activeClassName="active"
+                        renderOnZeroPageCount={null}
+                    />
+                </div>
             </div >
         </div>
     )
