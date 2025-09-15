@@ -11,10 +11,12 @@ import {
 
 const AppRoutes = () => {
     return (<Switch>
-        <Route path="/news">
-            {/* <About /> */}
-            news
-        </Route>
+        {/* <Route path="/news"> */}
+        {/* <About /> */}
+        {/* news */}
+        {/* </Route> */}
+        <PrivateRoutes path="/news" />
+
         <Route path="/about">
             {/* <Users /> */}
             about
@@ -27,10 +29,12 @@ const AppRoutes = () => {
             {/* <Home /> */}
             Home
         </Route>
+        {/* <PrivateRoutes path="/" component={Home} /> */}
+
         <Route path="/login" exact>
             <Login />
         </Route>
-        <Route path="/registor" exact>
+        <Route path="/register" exact>
             <Register />
         </Route>
         <PrivateRoutes path="/users" component={Users} />

@@ -3,12 +3,18 @@ import { useHistory } from 'react-router-dom'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import userService from '../../services/userService';
 
 
 
 const Login = (props) => {
 
     let history = useHistory()
+
+    const [formData, setFormData] = useState({
+        valueInput: "",
+        password: ""
+    });
 
     useEffect(() => {
         let session = JSON.parse(sessionStorage.getItem("account"));
@@ -18,34 +24,32 @@ const Login = (props) => {
     }, []);
 
     const handleCreateUser = () => {
-        history.push("/registor")
+        history.push("/register")
     }
 
     const handleLogin = async () => {
-        let inputCheck = isValidInputs();
-        if (inputCheck) {
-            // call api
-            await axios.post("http://localhost:8686/api/v1/login", { ...formData })
-                .then((response) => {
-                    if (response && response.data && response.data.EC == 0) {
-                        toast.success(response.data.EM)
-                        let data = {
-                            Authenticated: true,
-                            token: "fake token"
-                        }
-
-                        //lưu dữ liệu user xuống sessionStorage
-                        sessionStorage.setItem("account", JSON.stringify(data))
-                        history.push("/users")
-                        window.location.reload()
+        try {
+            let inputCheck = isValidInputs();
+            if (inputCheck) {
+                // call api
+                let response = await userService.LoginUser(formData)
+                if (response && response.data && response.data.EC == 0) {
+                    toast.success(response.data.EM)
+                    let data = {
+                        Authenticated: true,
+                        token: "fake token"
                     }
-                    if (response && response.data && response.data.EC != 0) {
-                        toast.error(response.data.EM)
-                    }
-                })
-                .catch((error) => {
-                    console.error("Lỗi gọi API:", error);
-                });
+                    //lưu dữ liệu user xuống sessionStorage
+                    sessionStorage.setItem("account", JSON.stringify(data))
+                    history.push("/users")
+                    window.location.reload()
+                }
+                if (response && response.data && response.data.EC != 0) {
+                    toast.error(response.data.EM)
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API:", error);
         }
 
     }
@@ -56,10 +60,7 @@ const Login = (props) => {
             handleLogin()
         }
     }
-    const [formData, setFormData] = useState({
-        valueInput: "",
-        password: ""
-    });
+
 
     const defaultValidInput = {
         valueInput: true,

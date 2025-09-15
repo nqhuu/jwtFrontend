@@ -3,6 +3,7 @@ import './Register.scss'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import userService from '../../services/userService';
 
 
 const Register = (props) => {
@@ -37,18 +38,17 @@ const Register = (props) => {
 
 
     useEffect(() => {
-        // axios.get("http://localhost:8686/api/v1/user")
-        //     .then((response) => {
-        //         console.log("==>>>>>>>>>> check data", response);
-        //     })
-        //     .catch((error) => {
-        //         console.error("Lỗi gọi API:", error);
-        //     });
         let session = JSON.parse(sessionStorage.getItem("account"));
         if (session) {
             history.push("/")
         }
     }, []);
+
+    const handleEnter = async (e) => {
+        if (e.keyCode === 13 && e.key === "Enter") {
+            handleRegister()
+        }
+    }
 
     const isValidInputs = () => {
         let valueCheck = { ...formData };
@@ -89,32 +89,32 @@ const Register = (props) => {
     }
 
     const handleRegister = async () => {
-        let validate = isValidInputs();
-        if (validate) {
-            await axios.post("http://localhost:8686/api/v1/register", { ...formData })
-                .then((response) => {
-                    console.log("==>>>>>>>>>> check data", response.data);
-                    if (response && response.data.EC != 0) {
-                        toast.error(response.data.EM);
-                    }
-                    if (response && response.data.EC == 0) {
-                        toast.success(response.data.EM);
-                        setFormData({
-                            ...formData,
-                            email: "",
-                            phone: "",
-                            username: "",
-                            password: "",
-                            confirmPassword: ""
-                        })
-                        history.push("/login")
-                    }
-                })
-                .catch((error) => {
-                    console.error("Lỗi gọi API:", error);
-                });
+        try {
+            let validate = isValidInputs();
+            if (validate) {
+                let response = await userService.RegisterUser(formData);
+                if (response && response.data.EC != 0) {
+                    toast.error(response.data.EM);
+                }
+                if (response && response.data.EC == 0) {
+                    toast.success(response.data.EM);
+                    setFormData({
+                        ...formData,
+                        email: "",
+                        phone: "",
+                        username: "",
+                        password: "",
+                        confirmPassword: ""
+                    })
+                    history.push("/login")
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API:", error);
         }
     }
+
+
     return (
         <div className="register-container">
             <div className="container">
@@ -178,9 +178,12 @@ const Register = (props) => {
                                 className={objCheckInput.confirmPassword ? "form-control" : "form-control is-invalid"} placeholder="Re-enter Password"
                                 value={formData.confirmPassword}
                                 onChange={(e) => handleChange(e)}
+                                onKeyDown={(e) => handleEnter(e)}
                             ></input>
                         </div>
-                        <button className="btn btn-primary" onClick={() => handleRegister()}>Register</button>
+                        <button className="btn btn-primary"
+                            onClick={() => handleRegister()
+                            }>Register</button>
                         <hr />
                         <div className="text-center">
                             <button className="btn btn-success" onClick={() => handleLogin()}>
