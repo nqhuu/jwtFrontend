@@ -3,14 +3,20 @@ import { useHistory } from 'react-router-dom'
 import "./Users.scss"
 import userService from '../../services/userService'
 import ReactPaginate from 'react-paginate';
+import { toast } from "react-toastify";
+import ModalConfirm from "../Modal/ModalConfirm";
 
 const Users = (props) => {
 
     let history = useHistory();
     const [pageCount, setPageCount] = useState(0); // Tổng số trang
     const [currentPage, setCurrentPage] = useState(1);  // Vị trí mục hiện tại
-    const [limit, setlimit] = useState(4); // Số mục hiển thị trên mỗi trang
+    const [count, setCount] = useState(0); // Tổng số mục
+    const [limit, setLimit] = useState(4); // Số mục hiển thị trên mỗi trang
     const [listusers, setListUsers] = useState([]);
+    const [userId, setUserId] = useState("");
+    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [dataUserSelect, setDataUserDelete] = useState({});
 
 
     useEffect(() => {
@@ -18,18 +24,25 @@ const Users = (props) => {
         let session = JSON.parse(sessionStorage.getItem("account"));
         if (!session) {
             history.push("/login");
-        };
+        } else {
+            setUserId(session.userId);
+        }
     }, []);
 
     useEffect(() => {
         fetchUsers(limit, currentPage);
-    }, [currentPage]);
+        if (count === limit) {
+            setCurrentPage(1);
+        }
+    }, [currentPage, count]);
+
 
     let fetchUsers = async (limit, page) => {
         let response = await userService.fetchAllUsers(limit, page);
         if (response && response.data && response.data.EC === 0 && response.data.DT && response.data.DT.users) {
             setListUsers(response.data.DT.users);
             setPageCount(response.data.DT.totalPages);
+            setCount(response.data.DT.totalRows);
         };
     };
 
@@ -39,6 +52,25 @@ const Users = (props) => {
         setCurrentPage(newOffset);
     };
 
+    const openModal = (id, userId) => {
+        setDataUserDelete({ id: id, userId: userId });
+        setIsOpenModal(true);
+    }
+
+    const handleClose = () => setIsOpenModal(false);
+
+
+    const handleLogic = async (id, userId) => {
+        let response = await userService.deleteUser(id, userId);
+        if (response && response.data && response.data.EC === 0) {
+            setIsOpenModal(false);
+            setDataUserDelete({});
+            toast.success(response.data.EM);
+            fetchUsers(limit, currentPage);
+        } else {
+            toast.error(response.data.EM);
+        }
+    }
 
 
     return (
@@ -70,17 +102,16 @@ const Users = (props) => {
                                     {listusers.map((item, index) => {
                                         return (
                                             <tr key={item.id}>
-                                                <td scope="row">{currentPage > 1 ? ((currentPage - 1) * limit + index + 1) : index + 1}</td>
+                                                <td >{currentPage > 1 ? ((currentPage - 1) * limit + index + 1) : index + 1}</td>
                                                 <td>{item.email}</td>
                                                 <td>{item.phone}</td>
                                                 <td>{item.username}</td>
                                                 <td>{item.groupData && item.groupData.description ? item.groupData.description : ""}</td>
                                                 <td >
                                                     <button className="btn btn-warning me-2" >Edit</button>
-                                                    <button className="btn btn-danger" >Delete</button>
+                                                    <button className="btn btn-danger" onClick={() => openModal(item.id, userId)}>Delete</button>
                                                 </td>
                                             </tr>
-
                                         )
                                     })
                                     }
@@ -89,7 +120,7 @@ const Users = (props) => {
                                 <>
                                     <tr>
                                         <td>
-                                            <span>Not found data</span>
+                                            Not found data
                                         </td>
                                     </tr>
                                 </>
@@ -120,6 +151,11 @@ const Users = (props) => {
                     />
                 </div>
             </div >
+            <ModalConfirm
+                isOpen={isOpenModal}
+                handleClose={handleClose}
+                handleLogic={() => handleLogic(dataUserSelect.id, dataUserSelect.userId)}
+            />
         </div>
     )
 };

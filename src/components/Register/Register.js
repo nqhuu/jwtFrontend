@@ -37,10 +37,10 @@ const Register = (props) => {
 
 
     useEffect(() => {
-        let session = JSON.parse(sessionStorage.getItem("account"));
-        if (session) {
-            history.push("/")
-        }
+        // let session = JSON.parse(sessionStorage.getItem("account"));
+        // if (session) {
+        //     history.push("/")
+        // }
     }, []);
 
     const handleEnter = async (e) => {
@@ -105,7 +105,7 @@ const Register = (props) => {
                         password: "",
                         confirmPassword: ""
                     })
-                    history.push("/login")
+                    // history.push("/login")
                 }
             }
         } catch (error) {

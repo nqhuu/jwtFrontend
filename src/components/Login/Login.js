@@ -36,7 +36,8 @@ const Login = (props) => {
                     toast.success(response.data.EM)
                     let data = {
                         Authenticated: true,
-                        token: "fake token"
+                        token: "fake token",
+                        userId: response.data.DT.id,
                     }
                     //lưu dữ liệu user xuống sessionStorage
                     sessionStorage.setItem("account", JSON.stringify(data))
