@@ -2,32 +2,16 @@ import { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { toast } from 'react-toastify';
-import userService from "../../services/userService";
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import { GENDER, GROUPS } from "../../Constants"
+
 
 
 function ModalUser(props) {
     const [show, setShow] = useState(false);
-
-    const [formData, setFormData] = useState({
-        email: "",
-        phone: "",
-        username: "",
-        address: "",
-        group: "",
-        gender: "",
-        password: "",
-        confirmPassword: ""
-    });
-
-    const defaultValidInput = {
-        email: true,
-        phone: true,
-        username: true,
-        password: true,
-        confirmPassword: true,
-    }
-    const [objCheckInput, setobjCheckInput] = useState(defaultValidInput)
+    const gender = GENDER;
+    const groups = GROUPS;
 
     useEffect(() => {
         setShow(props.isOpen);
@@ -35,183 +19,142 @@ function ModalUser(props) {
 
     const handleEnter = async (e) => {
         if (e.keyCode === 13 && e.key === "Enter") {
-            handleRegister()
+            props.handleRegister()
         }
     }
 
-    const isValidInputs = () => {
-        let valueCheck = { ...formData };
-        setobjCheckInput(defaultValidInput)
 
-        let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-        if (!regex.test(valueCheck.email)) {
-            setobjCheckInput({ ...defaultValidInput, email: false })
-            toast.error("Email không hợp lệ");
-            return false;
-        };
-        for (let key in valueCheck) {
-            console.log()
-            if (!valueCheck[key]) {
-                setobjCheckInput({ ...defaultValidInput, [key]: false })
-                toast.error("Vui lòng điền đầy đủ thông tin");
-                return false;
-            }
-        }
-        if (valueCheck.password.length < 6) {
-            setobjCheckInput({ ...defaultValidInput, password: false, confirmPassword: false })
-            toast.error("Mật khẩu phải có ít nhất 6 ký tự");
-            return false;
-        }
-        if (valueCheck.password !== valueCheck.confirmPassword) {
-            toast.error("Mật khẩu không khớp");
-            return false;
-        };
-        return true;
-    }
-
-    const handleChange = (e) => {
-        let { name, value } = e.target
-        setFormData({
-            ...formData,
-            [name]: value
-        })
-    }
-
-    const handleRegister = async () => {
-        try {
-            let validate = isValidInputs();
-            if (validate) {
-                let response = await userService.RegisterUser(formData);
-                if (response && response.data.EC !== 0) {
-                    toast.error(response.data.EM);
-                }
-                if (response && response.data.EC === 0) {
-                    toast.success(response.data.EM);
-                    setFormData({
-                        ...formData,
-                        email: "",
-                        phone: "",
-                        username: "",
-                        password: "",
-                        confirmPassword: ""
-                    })
-                    // history.push("/login")
-                }
-            }
-        } catch (error) {
-            console.error("Lỗi gọi API:", error);
-        }
-    }
 
     return (
         <>
-            <Modal backdrop="static" keyboard={false} show={show} onHide={props.handleClose}>
+            <Modal size="lg" backdrop="static" keyboard={false} show={show} onHide={props.handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Email address:</Form.Label>
-                            <Form.Control
-                                type="email"
-                                name="email"
-                                placeholder="name@example.com"
-                                autoFocus
-                                value={formData.email}
-                                onChange={(e) => handleChange(e)}
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    placeholder="Enter email"
+                                    name="email"
+                                    autoFocus
+                                    value={props.formData.email}
+                                    onChange={(e) => props.handleChange(e)}
+                                />
+                            </Form.Group>
 
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Phone number:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="phone"
-                                placeholder="Số điện thoại"
-                                value={formData.phone}
-                                onChange={(e) => handleChange(e)}
+                            <Form.Group as={Col} controlId="formGridEmail">
+                                <Form.Label>User name:</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="username"
+                                    placeholder="username"
+                                    value={props.formData.username}
+                                    onChange={(e) => props.handleChange(e)}
+                                />
+                            </Form.Group>
 
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>User name:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="username"
-                                placeholder="username"
-                                value={formData.username}
-                                onChange={(e) => handleChange(e)}
+                            <Form.Group as={Col} controlId="formGridPassword">
+                                <Form.Label>Phone number:</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Số điện thoại"
+                                    name="phone"
+                                    value={props.formData.phone}
+                                    onChange={(e) => props.handleChange(e)}
+                                />
+                            </Form.Group>
+                        </Row>
 
-                            />
-                        </Form.Group>
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridState">
+                                <Form.Label>Gender:</Form.Label>
+                                <Form.Select
+                                    type="text"
+                                    name="sex"
+                                    placeholder="Giới tính"
+                                    value={props.formData.sex}
+                                    onChange={(e) => props.handleChange(e)}
+                                >
+                                    {gender && gender.length > 0 ?
+                                        gender.map(item => <option key={item.value} value={item.value}>{item.label}</option>)
+                                        : null
+                                    }
+                                </Form.Select>
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridState">
+                                <Form.Label>Group:</Form.Label>
+                                <Form.Select
+                                    type="text"
+                                    name="group"
+                                    placeholder="Nhóm"
+                                    value={props.formData.group}
+                                    onChange={(e) => props.handleChange(e)}
+                                >
+                                    {groups && groups.length > 0 ?
+                                        groups.map(item => <option key={item.id} value={item.id}>{item.name}</option>)
+                                        : null
+                                    }
+                                </Form.Select>
+                            </Form.Group>
+                        </Row>
+
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                             <Form.Label>Address:</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="address"
                                 placeholder="Địa chỉ"
-                                value={formData.address}
-                                onChange={(e) => handleChange(e)}
+                                value={props.formData.address}
+                                onChange={(e) => props.handleChange(e)}
 
                             />
                         </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Group:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="group"
-                                placeholder="Nhóm"
-                                value={formData.group}
-                                onChange={(e) => handleChange(e)}
 
-                            />
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Gender:</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="gender"
-                                placeholder="Giới tính"
-                                value={formData.gender}
-                                onChange={(e) => handleChange(e)}
-
-                            />
-                        </Form.Group>
                         {props.modalType === "create" &&
                             <>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                    <Form.Label>Password:</Form.Label>
-                                    <Form.Control
-                                        type="Password"
-                                        name="password"
-                                        placeholder="Mật khẩu"
-                                        value={formData.password}
-                                        onChange={(e) => handleChange(e)}
-                                        onKeyDown={(e) => handleEnter(e)}
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                    <Form.Label>Re-enter Password:</Form.Label>
-                                    <Form.Control
-                                        type="Password"
-                                        name="confirmPassword"
-                                        placeholder="Password"
-                                        value={formData.confirmPassword}
-                                        onChange={(e) => handleChange(e)}
-                                        onKeyDown={(e) => handleEnter(e)}
-                                    />
-                                </Form.Group>
+                                <Row className="mb-3">
+                                    <Form.Group as={Col} controlId="formGridEmail">
+                                        <Form.Label>Password:</Form.Label>
+                                        <Form.Control
+                                            type="Password"
+                                            name="password"
+                                            placeholder="Mật khẩu"
+                                            value={props.formData.password}
+                                            onChange={(e) => props.handleChange(e)}
+                                            onKeyDown={(e) => handleEnter(e)}
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group as={Col} controlId="formGridEmail">
+                                        <Form.Label>Re-enter Password:</Form.Label>
+                                        <Form.Control
+                                            type="Password"
+                                            name="confirmPassword"
+                                            placeholder="Password"
+                                            value={props.formData.confirmPassword}
+                                            onChange={(e) => props.handleChange(e)}
+                                            onKeyDown={(e) => handleEnter(e)}
+                                        />
+                                    </Form.Group>
+                                </Row>
                             </>
                         }
-
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={props.handleClose}>
+                    <Button
+                        variant="secondary"
+                        name="modaluser"
+                        onClick={(e) => props.handleClose(e)}
+                    >
                         Close
                     </Button>
-                    <Button variant="primary" onClick={props.handleClose}>
+                    <Button variant="primary" onClick={props.handleRegister}>
                         {props.modalType === "create" ? "Created" : "Save"}
                     </Button>
                 </Modal.Footer>

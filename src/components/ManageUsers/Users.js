@@ -6,7 +6,7 @@ import ReactPaginate from 'react-paginate';
 import { toast } from "react-toastify";
 import ModalConfirm from "../Modal/ModalConfirm";
 import ModalUser from "../Modal/ModalUser";
-import { set } from "lodash";
+
 
 const Users = (props) => {
 
@@ -18,10 +18,31 @@ const Users = (props) => {
     const [listusers, setListUsers] = useState([]);
     const [userId, setUserId] = useState("");
     const [isOpenModal, setIsOpenModalDelete] = useState(false);
-    const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
+    const [isOpenModalUser, setIsOpenModaUser] = useState(false);
     const [dataUserSelect, setDataUserDelete] = useState({});
     const [modalType, setModalType] = useState("")
 
+    const [formData, setFormData] = useState({
+        email: "",
+        phone: "",
+        username: "",
+        address: "",
+        group: 3,
+        sex: "O",
+        password: "",
+        confirmPassword: ""
+    });
+
+    const defaultValidInput = {
+        email: true,
+        phone: true,
+        username: true,
+        address: true,
+        group: true,
+        sex: true,
+        password: true,
+        confirmPassword: true,
+    }
 
     useEffect(() => {
         //gọi dữ liệu dưới sessionStorage lên để validate đăng nhập
@@ -64,19 +85,32 @@ const Users = (props) => {
         };
 
         if (name === "create") {
-            setIsOpenModalCreate(true)
+            setIsOpenModaUser(true)
             setModalType("create")
         }
         if (name === "edit") {
-            setIsOpenModalCreate(true)
+            setIsOpenModaUser(true)
             setModalType("edit")
         }
 
     }
 
-    const handleClose = () => {
+    const handleClose = (e) => {
         setIsOpenModalDelete(false);
-        setIsOpenModalCreate(false)
+        if (e.target.name === "modaluser") {
+            setIsOpenModaUser(false);
+            setFormData({
+                ...formData,
+                email: "",
+                phone: "",
+                username: "",
+                address: "",
+                group: 3,
+                sex: "O",
+                password: "",
+                confirmPassword: ""
+            })
+        }
     };
 
 
@@ -89,6 +123,77 @@ const Users = (props) => {
             fetchUsers(limit, currentPage);
         } else {
             toast.error(response.data.EM);
+        }
+    }
+
+
+    const [objCheckInput, setObjCheckInput] = useState(defaultValidInput)
+
+    const isValidInputs = () => {
+        let valueCheck = { ...formData };
+        setObjCheckInput(defaultValidInput)
+
+        let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!regex.test(valueCheck.email)) {
+            setObjCheckInput({ ...defaultValidInput, email: false })
+            toast.error("Email không hợp lệ");
+            return false;
+        };
+        for (let key in valueCheck) {
+            console.log()
+            if (!valueCheck[key]) {
+                setObjCheckInput({ ...defaultValidInput, [key]: false })
+                toast.error("Vui lòng điền đầy đủ thông tin");
+                return false;
+            }
+        }
+        if (valueCheck.password.length < 6) {
+            setObjCheckInput({ ...defaultValidInput, password: false, confirmPassword: false })
+            toast.error("Mật khẩu phải có ít nhất 6 ký tự");
+            return false;
+        }
+        if (valueCheck.password !== valueCheck.confirmPassword) {
+            toast.error("Mật khẩu không khớp");
+            return false;
+        };
+        return true;
+    }
+
+    const handleChange = (e) => {
+        let { name, value } = e.target
+        setFormData({
+            ...formData,
+            [name]: value
+        })
+    }
+
+    const handleRegister = async () => {
+        try {
+            let validate = isValidInputs();
+            if (validate) {
+                let response = await userService.RegisterUser(formData);
+                if (response && response.data.EC !== 0) {
+                    toast.error(response.data.EM);
+                }
+                if (response && response.data.EC === 0) {
+                    toast.success(response.data.EM);
+                    setFormData({
+                        ...formData,
+                        email: "",
+                        phone: "",
+                        username: "",
+                        address: "",
+                        group: "",
+                        sex: "",
+                        password: "",
+                        confirmPassword: ""
+                    })
+                    setIsOpenModaUser(false)
+                    // history.push("/login")
+                }
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API:", error);
         }
     }
 
@@ -193,9 +298,12 @@ const Users = (props) => {
                 handleLogic={() => handleLogic(dataUserSelect.id, dataUserSelect.userId)}
             />
             <ModalUser
-                isOpen={isOpenModalCreate}
+                isOpen={isOpenModalUser}
                 handleClose={handleClose}
                 modalType={modalType}
+                handleRegister={handleRegister}
+                handleChange={handleChange}
+                formData={formData}
             />
         </div>
     )
