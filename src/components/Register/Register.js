@@ -1,7 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import './Register.scss'
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import userService from '../../services/userService';
 
@@ -93,10 +92,10 @@ const Register = (props) => {
             let validate = isValidInputs();
             if (validate) {
                 let response = await userService.RegisterUser(formData);
-                if (response && response.data.EC != 0) {
+                if (response && response.data.EC !== 0) {
                     toast.error(response.data.EM);
                 }
-                if (response && response.data.EC == 0) {
+                if (response && response.data.EC === 0) {
                     toast.success(response.data.EM);
                     setFormData({
                         ...formData,

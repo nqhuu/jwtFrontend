@@ -7,12 +7,10 @@ import ReactPaginate from 'react-paginate';
 const Users = (props) => {
 
     let history = useHistory();
-    const limit = 2;
     const [pageCount, setPageCount] = useState(0); // Tổng số trang
     const [currentPage, setCurrentPage] = useState(1);  // Vị trí mục hiện tại
-    // const [itemsPerPage, setItemsPerPage] = useState(2); // Số mục hiển thị trên mỗi trang
-    // const [items, setItems] = useState([]);
-    let [listusers, setListUsers] = useState([]);
+    const [limit, setlimit] = useState(4); // Số mục hiển thị trên mỗi trang
+    const [listusers, setListUsers] = useState([]);
 
 
     useEffect(() => {
@@ -72,7 +70,7 @@ const Users = (props) => {
                                     {listusers.map((item, index) => {
                                         return (
                                             <tr key={item.id}>
-                                                <td scope="row">{index + 1}</td>
+                                                <td scope="row">{currentPage > 1 ? ((currentPage - 1) * limit + index + 1) : index + 1}</td>
                                                 <td>{item.email}</td>
                                                 <td>{item.phone}</td>
                                                 <td>{item.username}</td>
@@ -89,7 +87,11 @@ const Users = (props) => {
                                 </>
                                 :
                                 <>
-                                    <span>Not found data</span>
+                                    <tr>
+                                        <td>
+                                            <span>Not found data</span>
+                                        </td>
+                                    </tr>
                                 </>
                             }
                         </tbody>

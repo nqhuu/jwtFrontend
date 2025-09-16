@@ -1,7 +1,6 @@
 import './Login.scss'
 import { useHistory } from 'react-router-dom'
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import userService from '../../services/userService';
 
@@ -33,7 +32,7 @@ const Login = (props) => {
             if (inputCheck) {
                 // call api
                 let response = await userService.LoginUser(formData)
-                if (response && response.data && response.data.EC == 0) {
+                if (response && response.data && response.data.EC === 0) {
                     toast.success(response.data.EM)
                     let data = {
                         Authenticated: true,
@@ -44,7 +43,7 @@ const Login = (props) => {
                     history.push("/users")
                     window.location.reload()
                 }
-                if (response && response.data && response.data.EC != 0) {
+                if (response && response.data && response.data.EC !== 0) {
                     toast.error(response.data.EM)
                 }
             }

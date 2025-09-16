@@ -1,13 +1,9 @@
 import Login from '../components/Login/Login';
 import Register from '../components/Register/Register';
 import Users from '../components/ManageUsers/Users';
-import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react";
 import PrivateRoutes from './PrivateRoutes';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-} from "react-router-dom";
+import { Switch, Route, } from "react-router-dom";
 
 const AppRoutes = () => {
     return (<Switch>
