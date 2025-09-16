@@ -5,6 +5,8 @@ import userService from '../../services/userService'
 import ReactPaginate from 'react-paginate';
 import { toast } from "react-toastify";
 import ModalConfirm from "../Modal/ModalConfirm";
+import ModalUser from "../Modal/ModalUser";
+import { set } from "lodash";
 
 const Users = (props) => {
 
@@ -15,8 +17,10 @@ const Users = (props) => {
     const [limit, setLimit] = useState(4); // Số mục hiển thị trên mỗi trang
     const [listusers, setListUsers] = useState([]);
     const [userId, setUserId] = useState("");
-    const [isOpenModal, setIsOpenModal] = useState(false);
+    const [isOpenModal, setIsOpenModalDelete] = useState(false);
+    const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
     const [dataUserSelect, setDataUserDelete] = useState({});
+    const [modalType, setModalType] = useState("")
 
 
     useEffect(() => {
@@ -52,18 +56,34 @@ const Users = (props) => {
         setCurrentPage(newOffset);
     };
 
-    const openModal = (id, userId) => {
-        setDataUserDelete({ id: id, userId: userId });
-        setIsOpenModal(true);
+    const openModal = (e, id, userId) => {
+        let name = e.target.name;
+        if (name === "delete") {
+            setDataUserDelete({ id: id, userId: userId });
+            setIsOpenModalDelete(true);
+        };
+
+        if (name === "create") {
+            setIsOpenModalCreate(true)
+            setModalType("create")
+        }
+        if (name === "edit") {
+            setIsOpenModalCreate(true)
+            setModalType("edit")
+        }
+
     }
 
-    const handleClose = () => setIsOpenModal(false);
+    const handleClose = () => {
+        setIsOpenModalDelete(false);
+        setIsOpenModalCreate(false)
+    };
 
 
     const handleLogic = async (id, userId) => {
         let response = await userService.deleteUser(id, userId);
         if (response && response.data && response.data.EC === 0) {
-            setIsOpenModal(false);
+            setIsOpenModalDelete(false);
             setDataUserDelete({});
             toast.success(response.data.EM);
             fetchUsers(limit, currentPage);
@@ -81,7 +101,11 @@ const Users = (props) => {
                         <h1>List Users</h1>
                     </div>
                     <div className="actions d-flex justify-content-end ">
-                        <button className="btn btn-primary">Add new user</button>
+                        <button
+                            className="btn btn-primary"
+                            name="create"
+                            onClick={(e) => openModal(e, '', userId)}
+                        >Add new user</button>
                     </div>
                 </div>
                 <div className="user-body">
@@ -108,8 +132,20 @@ const Users = (props) => {
                                                 <td>{item.username}</td>
                                                 <td>{item.groupData && item.groupData.description ? item.groupData.description : ""}</td>
                                                 <td >
-                                                    <button className="btn btn-warning me-2" >Edit</button>
-                                                    <button className="btn btn-danger" onClick={() => openModal(item.id, userId)}>Delete</button>
+                                                    <button
+                                                        className="btn btn-warning me-2"
+                                                        name="edit"
+                                                        onClick={(e) => openModal(e, item.id, userId)}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-danger"
+                                                        name="delete"
+                                                        onClick={(e) => openModal(e, item.id, userId)}
+                                                    >
+                                                        Delete
+                                                    </button>
                                                 </td>
                                             </tr>
                                         )
@@ -155,6 +191,11 @@ const Users = (props) => {
                 isOpen={isOpenModal}
                 handleClose={handleClose}
                 handleLogic={() => handleLogic(dataUserSelect.id, dataUserSelect.userId)}
+            />
+            <ModalUser
+                isOpen={isOpenModalCreate}
+                handleClose={handleClose}
+                modalType={modalType}
             />
         </div>
     )

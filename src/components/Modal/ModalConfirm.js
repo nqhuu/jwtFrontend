@@ -44,7 +44,7 @@ function ModalConfirm(props) {
 
     return (
         <>
-            <Modal show={show} onHide={props.handleClose}>
+            <Modal backdrop="static" keyboard={false} show={show} onHide={props.handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Xác nhận</Modal.Title>
                 </Modal.Header>
