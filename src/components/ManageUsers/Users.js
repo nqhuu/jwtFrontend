@@ -97,6 +97,7 @@ const Users = (props) => {
                 address: user.address,
                 groupId: user.groupData.id,
                 sex: user.sex,
+                id: user.id
             })
             setIsOpenModaUser(true)
             setModalType("edit")
@@ -169,7 +170,7 @@ const Users = (props) => {
         let { name, value } = e.target
         setFormData({
             ...formData,
-            [name]: value
+            [name]: value.trim()
         })
     }
 
