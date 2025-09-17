@@ -37,7 +37,7 @@ const Login = (props) => {
                     let data = {
                         Authenticated: true,
                         token: "fake token",
-                        userId: response.data.DT.id,
+                        userLoginId: response.data.DT.id,
                     }
                     //lưu dữ liệu user xuống sessionStorage
                     sessionStorage.setItem("account", JSON.stringify(data))

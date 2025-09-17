@@ -19,7 +19,7 @@ function ModalUser(props) {
 
     const handleEnter = async (e) => {
         if (e.keyCode === 13 && e.key === "Enter") {
-            props.handleRegister()
+            props.handleRegisterOrEdit()
         }
     }
 
@@ -27,14 +27,14 @@ function ModalUser(props) {
 
     return (
         <>
-            <Modal size="lg" backdrop="static" keyboard={false} show={show} onHide={props.handleClose}>
+            <Modal size="lg" backdrop="static" keyboard={false} show={show} onHide={() => props.handleClose("modaluser")}>
                 <Modal.Header closeButton>
                     <Modal.Title>Modal heading</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridEmail">
+                            <Form.Group as={Col} >
                                 <Form.Label>Email</Form.Label>
                                 <Form.Control
                                     type="email"
@@ -46,7 +46,7 @@ function ModalUser(props) {
                                 />
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridEmail">
+                            <Form.Group as={Col} >
                                 <Form.Label>User name:</Form.Label>
                                 <Form.Control
                                     type="text"
@@ -70,7 +70,7 @@ function ModalUser(props) {
                         </Row>
 
                         <Row className="mb-3">
-                            <Form.Group as={Col} controlId="formGridState">
+                            <Form.Group as={Col} >
                                 <Form.Label>Gender:</Form.Label>
                                 <Form.Select
                                     type="text"
@@ -86,13 +86,13 @@ function ModalUser(props) {
                                 </Form.Select>
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridState">
+                            <Form.Group as={Col} >
                                 <Form.Label>Group:</Form.Label>
                                 <Form.Select
                                     type="text"
-                                    name="group"
+                                    name="groupId"
                                     placeholder="Nhóm"
-                                    value={props.formData.group}
+                                    value={props.formData.groupId}
                                     onChange={(e) => props.handleChange(e)}
                                 >
                                     {groups && groups.length > 0 ?
@@ -118,7 +118,7 @@ function ModalUser(props) {
                         {props.modalType === "create" &&
                             <>
                                 <Row className="mb-3">
-                                    <Form.Group as={Col} controlId="formGridEmail">
+                                    <Form.Group as={Col} >
                                         <Form.Label>Password:</Form.Label>
                                         <Form.Control
                                             type="Password"
@@ -130,7 +130,7 @@ function ModalUser(props) {
                                         />
                                     </Form.Group>
 
-                                    <Form.Group as={Col} controlId="formGridEmail">
+                                    <Form.Group as={Col} >
                                         <Form.Label>Re-enter Password:</Form.Label>
                                         <Form.Control
                                             type="Password"
@@ -150,11 +150,11 @@ function ModalUser(props) {
                     <Button
                         variant="secondary"
                         name="modaluser"
-                        onClick={(e) => props.handleClose(e)}
+                        onClick={() => props.handleClose("modaluser")}
                     >
                         Close
                     </Button>
-                    <Button variant="primary" onClick={props.handleRegister}>
+                    <Button variant="primary" onClick={props.handleRegisterOrEdit}>
                         {props.modalType === "create" ? "Created" : "Save"}
                     </Button>
                 </Modal.Footer>

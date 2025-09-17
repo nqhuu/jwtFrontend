@@ -16,10 +16,10 @@ const Users = (props) => {
     const [count, setCount] = useState(0); // Tổng số mục
     const [limit, setLimit] = useState(4); // Số mục hiển thị trên mỗi trang
     const [listusers, setListUsers] = useState([]);
-    const [userId, setUserId] = useState("");
+    const [userLoginId, setUserLoginId] = useState("");
     const [isOpenModal, setIsOpenModalDelete] = useState(false);
     const [isOpenModalUser, setIsOpenModaUser] = useState(false);
-    const [dataUserSelect, setDataUserDelete] = useState({});
+    const [dataUserSelect, setDataUserSelect] = useState({});
     const [modalType, setModalType] = useState("")
 
     const [formData, setFormData] = useState({
@@ -27,7 +27,7 @@ const Users = (props) => {
         phone: "",
         username: "",
         address: "",
-        group: 3,
+        groupId: 3,
         sex: "O",
         password: "",
         confirmPassword: ""
@@ -38,7 +38,7 @@ const Users = (props) => {
         phone: true,
         username: true,
         address: true,
-        group: true,
+        groupId: true,
         sex: true,
         password: true,
         confirmPassword: true,
@@ -50,7 +50,7 @@ const Users = (props) => {
         if (!session) {
             history.push("/login");
         } else {
-            setUserId(session.userId);
+            setUserLoginId(session.userLoginId);
         }
     }, []);
 
@@ -77,10 +77,10 @@ const Users = (props) => {
         setCurrentPage(newOffset);
     };
 
-    const openModal = (e, id, userId) => {
+    const openModal = (e, user, userLoginId) => {
         let name = e.target.name;
         if (name === "delete") {
-            setDataUserDelete({ id: id, userId: userId });
+            setDataUserSelect({ user: user, userLoginId: userLoginId });
             setIsOpenModalDelete(true);
         };
 
@@ -89,15 +89,23 @@ const Users = (props) => {
             setModalType("create")
         }
         if (name === "edit") {
+            console.log("user", user)
+            setFormData({
+                ...formData,
+                email: user.email,
+                phone: user.phone,
+                username: user.username,
+                address: user.address,
+                groupId: user.groupData.id,
+                sex: user.sex,
+            })
             setIsOpenModaUser(true)
             setModalType("edit")
         }
-
     }
-
-    const handleClose = (e) => {
+    const handleClose = (id) => {
         setIsOpenModalDelete(false);
-        if (e.target.name === "modaluser") {
+        if (id === "modaluser") {
             setIsOpenModaUser(false);
             setFormData({
                 ...formData,
@@ -105,7 +113,7 @@ const Users = (props) => {
                 phone: "",
                 username: "",
                 address: "",
-                group: 3,
+                groupId: 3,
                 sex: "O",
                 password: "",
                 confirmPassword: ""
@@ -113,12 +121,11 @@ const Users = (props) => {
         }
     };
 
-
-    const handleLogic = async (id, userId) => {
-        let response = await userService.deleteUser(id, userId);
+    const handleLogic = async (type) => {
+        let response = await userService.deleteUser(dataUserSelect.user.id, dataUserSelect.userLoginId);
         if (response && response.data && response.data.EC === 0) {
             setIsOpenModalDelete(false);
-            setDataUserDelete({});
+            setDataUserSelect({});
             toast.success(response.data.EM);
             fetchUsers(limit, currentPage);
         } else {
@@ -126,11 +133,12 @@ const Users = (props) => {
         }
     }
 
-
     const [objCheckInput, setObjCheckInput] = useState(defaultValidInput)
 
-    const isValidInputs = () => {
-        let valueCheck = { ...formData };
+    const isValidInputs = (type) => {
+        let { password, confirmPassword, ...valueCheckEdit } = formData;
+        let valueCheck = type === "create" ? { ...formData } : { ...valueCheckEdit }
+
         setObjCheckInput(defaultValidInput)
 
         let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -140,19 +148,18 @@ const Users = (props) => {
             return false;
         };
         for (let key in valueCheck) {
-            console.log()
             if (!valueCheck[key]) {
                 setObjCheckInput({ ...defaultValidInput, [key]: false })
                 toast.error("Vui lòng điền đầy đủ thông tin");
                 return false;
             }
         }
-        if (valueCheck.password.length < 6) {
+        if (type === "create" && valueCheck && valueCheck.password && valueCheck.password.length < 6) {
             setObjCheckInput({ ...defaultValidInput, password: false, confirmPassword: false })
             toast.error("Mật khẩu phải có ít nhất 6 ký tự");
             return false;
         }
-        if (valueCheck.password !== valueCheck.confirmPassword) {
+        if (type === "create" && valueCheck && valueCheck.password && valueCheck.confirmPassword && valueCheck.password !== valueCheck.confirmPassword) {
             toast.error("Mật khẩu không khớp");
             return false;
         };
@@ -167,11 +174,18 @@ const Users = (props) => {
         })
     }
 
-    const handleRegister = async () => {
+    const handleRegisterOrEdit = async () => {
         try {
-            let validate = isValidInputs();
+            let validate = isValidInputs(modalType);
             if (validate) {
-                let response = await userService.RegisterUser(formData);
+                let response = {};
+                if (modalType === "create") {
+                    response = await userService.createUser(formData);
+                }
+                if (modalType === "edit") {
+                    let { password, confirmPassword, ...dataUpdate } = formData;
+                    response = await userService.updateUser(dataUpdate, modalType);
+                }
                 if (response && response.data.EC !== 0) {
                     toast.error(response.data.EM);
                 }
@@ -183,12 +197,13 @@ const Users = (props) => {
                         phone: "",
                         username: "",
                         address: "",
-                        group: "",
-                        sex: "",
+                        groupId: 3,
+                        sex: "O",
                         password: "",
                         confirmPassword: ""
-                    })
-                    setIsOpenModaUser(false)
+                    });
+                    setIsOpenModaUser(false);
+                    fetchUsers(limit, currentPage);
                     // history.push("/login")
                 }
             }
@@ -209,7 +224,7 @@ const Users = (props) => {
                         <button
                             className="btn btn-primary"
                             name="create"
-                            onClick={(e) => openModal(e, '', userId)}
+                            onClick={(e) => openModal(e, '', userLoginId)}
                         >Add new user</button>
                     </div>
                 </div>
@@ -240,14 +255,14 @@ const Users = (props) => {
                                                     <button
                                                         className="btn btn-warning me-2"
                                                         name="edit"
-                                                        onClick={(e) => openModal(e, item.id, userId)}
+                                                        onClick={(e) => openModal(e, item, userLoginId)}
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         className="btn btn-danger"
                                                         name="delete"
-                                                        onClick={(e) => openModal(e, item.id, userId)}
+                                                        onClick={(e) => openModal(e, item, userLoginId)}
                                                     >
                                                         Delete
                                                     </button>
@@ -295,13 +310,14 @@ const Users = (props) => {
             <ModalConfirm
                 isOpen={isOpenModal}
                 handleClose={handleClose}
-                handleLogic={() => handleLogic(dataUserSelect.id, dataUserSelect.userId)}
+                handleLogic={handleLogic}
+            // handleLogic={() => handleLogic(dataUserSelect.id, dataUserSelect.userLoginId)}
             />
             <ModalUser
                 isOpen={isOpenModalUser}
                 handleClose={handleClose}
                 modalType={modalType}
-                handleRegister={handleRegister}
+                handleRegisterOrEdit={handleRegisterOrEdit}
                 handleChange={handleChange}
                 formData={formData}
             />
