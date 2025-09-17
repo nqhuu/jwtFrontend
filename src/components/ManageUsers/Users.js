@@ -78,6 +78,7 @@ const Users = (props) => {
     };
 
     const openModal = (e, user, userLoginId) => {
+        console.log("user", user)
         let name = e.target.name;
         if (name === "delete") {
             setDataUserSelect({ user: user, userLoginId: userLoginId });
@@ -87,17 +88,27 @@ const Users = (props) => {
         if (name === "create") {
             setIsOpenModaUser(true)
             setModalType("create")
+            setFormData({
+                email: "",
+                phone: "",
+                username: "",
+                address: "",
+                groupId: 4,
+                sex: "O",
+                password: "",
+                confirmPassword: ""
+            });
         }
         if (name === "edit") {
             setFormData({
                 ...formData,
-                email: user.email,
-                phone: user.phone,
-                username: user.username,
-                address: user.address,
-                groupId: user.groupData.id,
-                sex: user.sex,
-                id: user.id
+                email: user.email ? user.email : "",
+                phone: user.phone ? user.phone : "",
+                username: user.username ? user.username : "",
+                address: user.address ? user.address : "",
+                groupId: user.groupData && user.groupData.id ? user.groupData.id : 4,
+                sex: user.sex ? user.sex : "O",
+                id: user.id ? user.id : ""
             })
             setIsOpenModaUser(true)
             setModalType("edit")
@@ -138,7 +149,6 @@ const Users = (props) => {
     const isValidInputs = (type) => {
         let { password, confirmPassword, ...valueCheckEdit } = formData;
         let valueCheck = type === "create" ? { ...formData } : { ...valueCheckEdit }
-
         setObjCheckInput(defaultValidInput)
 
         let regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -184,6 +194,7 @@ const Users = (props) => {
                 }
                 if (modalType === "edit") {
                     let { password, confirmPassword, ...dataUpdate } = formData;
+                    console.log("dataUpdate", dataUpdate)
                     response = await userService.updateUser(dataUpdate, modalType);
                 }
                 if (response && response.data.EC !== 0) {
@@ -197,7 +208,7 @@ const Users = (props) => {
                         phone: "",
                         username: "",
                         address: "",
-                        groupId: 3,
+                        groupId: 4,
                         sex: "O",
                         password: "",
                         confirmPassword: ""

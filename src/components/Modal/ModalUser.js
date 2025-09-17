@@ -13,7 +13,7 @@ function ModalUser(props) {
     const [show, setShow] = useState(false);
     // const [gender, setGender] = useState([]);
     const [userGroups, setUserGroups] = useState([]);
-    const gender = GENDER;
+    const gender = [...GENDER];
 
     useEffect(() => {
         getGroups()
@@ -35,7 +35,6 @@ function ModalUser(props) {
             props.handleRegisterOrEdit()
         }
     }
-
 
     return (
         <>
