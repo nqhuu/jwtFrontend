@@ -4,14 +4,27 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import groupService from "../../services/groupService"
 import { GENDER, GROUPS } from "../../Constants"
 
 
 
 function ModalUser(props) {
     const [show, setShow] = useState(false);
+    // const [gender, setGender] = useState([]);
+    const [userGroups, setUserGroups] = useState([]);
     const gender = GENDER;
-    const groups = GROUPS;
+
+    useEffect(() => {
+        getGroups()
+    }, [userGroups]);
+
+    const getGroups = async () => {
+        let allGroups = await groupService.fetchAllGroups()
+        if (allGroups && allGroups.data && allGroups.data.EC === 0 && allGroups.data.DT) {
+            setUserGroups(allGroups.data.DT)
+        }
+    }
 
     useEffect(() => {
         setShow(props.isOpen);
@@ -22,7 +35,6 @@ function ModalUser(props) {
             props.handleRegisterOrEdit()
         }
     }
-
 
 
     return (
@@ -95,8 +107,8 @@ function ModalUser(props) {
                                     value={props.formData.groupId}
                                     onChange={(e) => props.handleChange(e)}
                                 >
-                                    {groups && groups.length > 0 ?
-                                        groups.map(item => <option key={item.id} value={item.id}>{item.name}</option>)
+                                    {userGroups && userGroups.length > 0 ?
+                                        userGroups.map(item => <option key={item.id} value={item.id}>{item.description}</option>)
                                         : null
                                     }
                                 </Form.Select>

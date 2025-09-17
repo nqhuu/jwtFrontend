@@ -27,8 +27,8 @@ const Users = (props) => {
         phone: "",
         username: "",
         address: "",
-        groupId: 3,
-        sex: "O",
+        groupId: "",
+        sex: "",
         password: "",
         confirmPassword: ""
     });
@@ -89,7 +89,6 @@ const Users = (props) => {
             setModalType("create")
         }
         if (name === "edit") {
-            console.log("user", user)
             setFormData({
                 ...formData,
                 email: user.email,

@@ -23,11 +23,19 @@ const fetchAllUsers = async (limit, page) => {
 const deleteUser = async (id, userLoginId) => {
     return await axios.delete(`http://localhost:8686/api/v1/user/delete/${id}?userId=${userLoginId}`);
 }
+
+const fetchAllGroups = async () => {
+    return await axios.get(`http://localhost:8686/api/v1/group/read`);
+}
+
+
+
 export default {
     LoginUser,
     RegisterUser,
     fetchAllUsers,
     deleteUser,
     createUser,
-    updateUser
+    updateUser,
+    fetchAllGroups
 }
