@@ -49,7 +49,7 @@ const Users = (props) => {
         if (!session) {
             history.push("/login");
         } else {
-            setUserLoginId(session.userLoginId);
+            setUserLoginId(session.response.userId);
         }
     }, []);
 
