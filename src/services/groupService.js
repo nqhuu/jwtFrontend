@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from '../setup/axios';
 
 
 const fetchAllGroups = async () => {
-    return await axios.get(`http://localhost:8686/api/v1/group/read`);
+    return await axios.get(`/api/v1/group/read`);
 }
 
 

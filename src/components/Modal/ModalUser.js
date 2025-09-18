@@ -17,13 +17,15 @@ function ModalUser(props) {
 
     useEffect(() => {
         getGroups()
-    }, [userGroups]);
+    }, []);
+
 
     const getGroups = async () => {
         let allGroups = await groupService.fetchAllGroups()
-        if (allGroups && allGroups.data && allGroups.data.EC === 0 && allGroups.data.DT) {
-            setUserGroups(allGroups.data.DT)
+        if (allGroups && allGroups.EC === 0 && allGroups.DT) {
+            setUserGroups(allGroups.DT)
         }
+
     }
 
     useEffect(() => {
@@ -40,7 +42,7 @@ function ModalUser(props) {
         <>
             <Modal size="lg" backdrop="static" keyboard={false} show={show} onHide={() => props.handleClose("modaluser")}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Modal heading</Modal.Title>
+                    <Modal.Title>{props.modalType === "edit" ? "Update User" : "Create User"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -48,6 +50,7 @@ function ModalUser(props) {
                             <Form.Group as={Col} >
                                 <Form.Label>Email</Form.Label>
                                 <Form.Control
+                                    disabled={props.modalType === "edit"}
                                     type="email"
                                     placeholder="Enter email"
                                     name="email"

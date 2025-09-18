@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import ModalConfirm from "../Modal/ModalConfirm";
 import ModalUser from "../Modal/ModalUser";
 
-
 const Users = (props) => {
 
     let history = useHistory();
@@ -64,10 +63,10 @@ const Users = (props) => {
 
     let fetchUsers = async (limit, page) => {
         let response = await userService.fetchAllUsers(limit, page);
-        if (response && response.data && response.data.EC === 0 && response.data.DT && response.data.DT.users) {
-            setListUsers(response.data.DT.users);
-            setPageCount(response.data.DT.totalPages);
-            setCount(response.data.DT.totalRows);
+        if (response && response.EC === 0 && response.DT && response.DT.users) {
+            setListUsers(response.DT.users);
+            setPageCount(response.DT.totalPages);
+            setCount(response.DT.totalRows);
         };
     };
 
@@ -77,18 +76,18 @@ const Users = (props) => {
         setCurrentPage(newOffset);
     };
 
-    const openModal = (e, user, userLoginId) => {
-        console.log("user", user)
-        let name = e.target.name;
-        if (name === "delete") {
+    const openModal = (action, user, userLoginId) => {
+        // let name = e.target.name;
+        if (action === "delete") {
             setDataUserSelect({ user: user, userLoginId: userLoginId });
             setIsOpenModalDelete(true);
         };
 
-        if (name === "create") {
+        if (action === "create") {
             setIsOpenModaUser(true)
             setModalType("create")
             setFormData({
+                ...formData,
                 email: "",
                 phone: "",
                 username: "",
@@ -99,7 +98,7 @@ const Users = (props) => {
                 confirmPassword: ""
             });
         }
-        if (name === "edit") {
+        if (action === "edit") {
             setFormData({
                 ...formData,
                 email: user.email ? user.email : "",
@@ -114,6 +113,8 @@ const Users = (props) => {
             setModalType("edit")
         }
     }
+
+
     const handleClose = (id) => {
         setIsOpenModalDelete(false);
         if (id === "modaluser") {
@@ -134,13 +135,13 @@ const Users = (props) => {
 
     const handleLogic = async (type) => {
         let response = await userService.deleteUser(dataUserSelect.user.id, dataUserSelect.userLoginId);
-        if (response && response.data && response.data.EC === 0) {
+        if (response && response.EC === 0) {
             setIsOpenModalDelete(false);
             setDataUserSelect({});
-            toast.success(response.data.EM);
+            toast.success(response.EM);
             fetchUsers(limit, currentPage);
         } else {
-            toast.error(response.data.EM);
+            toast.error(response.EM);
         }
     }
 
@@ -194,14 +195,13 @@ const Users = (props) => {
                 }
                 if (modalType === "edit") {
                     let { password, confirmPassword, ...dataUpdate } = formData;
-                    console.log("dataUpdate", dataUpdate)
                     response = await userService.updateUser(dataUpdate, modalType);
                 }
-                if (response && response.data.EC !== 0) {
-                    toast.error(response.data.EM);
+                if (response && response.EC !== 0) {
+                    toast.error(response.EM);
                 }
-                if (response && response.data.EC === 0) {
-                    toast.success(response.data.EM);
+                if (response && response.EC === 0) {
+                    toast.success(response.EM);
                     setFormData({
                         ...formData,
                         email: "",
@@ -229,13 +229,12 @@ const Users = (props) => {
             < div className="manage-users-container " >
                 <div className="user-header">
                     <div className="title">
-                        <h1>List Users</h1>
+                        <h1>Manage Users</h1>
                     </div>
                     <div className="actions d-flex justify-content-end ">
                         <button
                             className="btn btn-primary"
-                            name="create"
-                            onClick={(e) => openModal(e, '', userLoginId)}
+                            onClick={(e) => openModal("create", '', userLoginId)}
                         >Add new user</button>
                     </div>
                 </div>
@@ -264,18 +263,18 @@ const Users = (props) => {
                                                 <td>{item.groupData && item.groupData.description ? item.groupData.description : ""}</td>
                                                 <td >
                                                     <button
-                                                        className="btn btn-warning me-2"
-                                                        name="edit"
-                                                        onClick={(e) => openModal(e, item, userLoginId)}
+                                                        title="edit"
+                                                        className="btn  me-2"
+                                                        onClick={(e) => openModal("edit", item, userLoginId)}
                                                     >
-                                                        Edit
+                                                        <i className="fa-solid fa-user-pen" style={{ color: "orange" }}></i>
                                                     </button>
                                                     <button
-                                                        className="btn btn-danger"
-                                                        name="delete"
-                                                        onClick={(e) => openModal(e, item, userLoginId)}
+                                                        title="delete"
+                                                        className="btn "
+                                                        onClick={(e) => openModal("delete", item, userLoginId)}
                                                     >
-                                                        Delete
+                                                        <i className="fa-solid fa-trash" style={{ color: "red" }}></i>
                                                     </button>
                                                 </td>
                                             </tr>

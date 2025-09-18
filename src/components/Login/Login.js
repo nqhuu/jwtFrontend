@@ -32,20 +32,20 @@ const Login = (props) => {
             if (inputCheck) {
                 // call api
                 let response = await userService.LoginUser(formData)
-                if (response && response.data && response.data.EC === 0) {
-                    toast.success(response.data.EM)
+                if (response && response.EC === 0) {
+                    toast.success(response.EM)
                     let data = {
                         Authenticated: true,
                         token: "fake token",
-                        userLoginId: response.data.DT.id,
+                        userLoginId: response.DT.id,
                     }
                     //lưu dữ liệu user xuống sessionStorage
                     sessionStorage.setItem("account", JSON.stringify(data))
                     history.push("/users")
                     window.location.reload()
                 }
-                if (response && response.data && response.data.EC !== 0) {
-                    toast.error(response.data.EM)
+                if (response && response.EC !== 0) {
+                    toast.error(response.EM)
                 }
             }
         } catch (error) {
@@ -55,7 +55,6 @@ const Login = (props) => {
     }
 
     const handleEnter = async (e) => {
-        console.log(e)
         if (e.keyCode === 13 && e.key === "Enter") {
             handleLogin()
         }

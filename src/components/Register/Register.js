@@ -92,11 +92,11 @@ const Register = (props) => {
             let validate = isValidInputs();
             if (validate) {
                 let response = await userService.RegisterUser(formData);
-                if (response && response.data.EC !== 0) {
-                    toast.error(response.data.EM);
+                if (response && response.EC !== 0) {
+                    toast.error(response.EM);
                 }
-                if (response && response.data.EC === 0) {
-                    toast.success(response.data.EM);
+                if (response && response.EC === 0) {
+                    toast.success(response.EM);
                     setFormData({
                         ...formData,
                         email: "",
