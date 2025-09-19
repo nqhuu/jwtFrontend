@@ -10,6 +10,9 @@ const instance = axios.create({
     // baseURL: process.env.SERVER_URL
 });
 
+// cho phép set cookie từ phía server, khi gửi dữ liệu từ fe xuống be thì sẽ gửi kèm cookie
+instance.defaults.withCredentials = true;
+
 // // Alter defaults after instance has been created
 // instance.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 
