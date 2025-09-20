@@ -54,9 +54,12 @@ const Users = (props) => {
     }, []);
 
     useEffect(() => {
-        fetchUsers(limit, currentPage);
-        if (count === limit) {
-            setCurrentPage(1);
+        let session = JSON.parse(sessionStorage.getItem("account"));
+        if (session) {
+            fetchUsers(limit, currentPage);
+            if (count === limit) {
+                setCurrentPage(1);
+            }
         }
     }, [currentPage, count]);
 
@@ -135,6 +138,7 @@ const Users = (props) => {
 
     const handleLogic = async (type) => {
         let response = await userService.deleteUser(dataUserSelect.user.id, dataUserSelect.userLoginId);
+        console.log(response)
         if (response && response.EC === 0) {
             setIsOpenModalDelete(false);
             setDataUserSelect({});

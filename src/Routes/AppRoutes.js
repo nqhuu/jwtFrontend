@@ -7,10 +7,6 @@ import { Switch, Route, } from "react-router-dom";
 
 const AppRoutes = () => {
     return (<Switch>
-        {/* <Route path="/news"> */}
-        {/* <About /> */}
-        {/* news */}
-        {/* </Route> */}
         <PrivateRoutes path="/news" />
 
         <Route path="/about">

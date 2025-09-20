@@ -1,13 +1,13 @@
 // import logo from './logo.svg';
 import './App.scss';
 import Nav from './components/Navigation/Nav';
-import { useState, useEffect } from "react";
+import { useState, useEffect, } from "react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppRoutes from './Routes/AppRoutes';
 
 import _ from "lodash"
-import { BrowserRouter as Router, } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
 
