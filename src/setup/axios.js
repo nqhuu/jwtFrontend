@@ -51,7 +51,7 @@ instance.interceptors.response.use(function onFulfilled(response) {
 
         // forbidden (permission related issues)
         case 403: {
-            toast.error("Không có quyền này, hãy liên hệ admin...")
+            toast.error("Bạn không có quyền này, hãy liên hệ admin...")
             return Promise.reject(err);
         }
 
