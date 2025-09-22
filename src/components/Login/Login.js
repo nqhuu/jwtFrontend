@@ -1,14 +1,17 @@
 import './Login.scss'
 import { useHistory } from 'react-router-dom'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import userService from '../../services/userService';
+import { UserContext } from '../../context/UserContext';
+import { getRoles } from '@testing-library/react';
 
 
 
 const Login = (props) => {
+    const { loginContext } = useContext(UserContext);
 
-    let history = useHistory()
+    let history = useHistory();
 
     const [formData, setFormData] = useState({
         valueInput: "",
@@ -23,26 +26,32 @@ const Login = (props) => {
     }, []);
 
     const handleCreateUser = () => {
-        history.push("/register")
-    }
+        history.push("/register");
+    };
 
     const handleLogin = async () => {
         try {
             let inputCheck = isValidInputs();
             if (inputCheck) {
                 // call api
-                let response = await userService.LoginUser(formData)
+                let response = await userService.LoginUser(formData);
                 if (response && response.EC === 0) {
+                    let role = response.DT.role;
+                    let email = response.DT.email;
+                    let username = response.DT.username;
+                    let token = response.DT.access_token;
+                    let userId = response.DT.userId;
                     toast.success(response.EM)
                     let data = {
-                        // Authenticated: true,
-                        // token: "fake token",
-                        response,
+                        isAuthenticated: true,
+                        token: token,
+                        account: { email, username, role, userId }
                     }
                     //lưu dữ liệu user xuống sessionStorage
-                    sessionStorage.setItem("account", JSON.stringify(data))
-                    history.push("/users")
-                    window.location.reload()
+                    sessionStorage.setItem("account", JSON.stringify(data));
+                    loginContext(data);
+                    history.push("/users");
+                    // window.location.reload();
                 }
                 if (response && response.EC !== 0) {
                     toast.error(response.EM)
@@ -57,35 +66,35 @@ const Login = (props) => {
     const handleEnter = async (e) => {
         if (e.keyCode === 13 && e.key === "Enter") {
             handleLogin()
-        }
-    }
+        };
+    };
 
 
     const defaultValidInput = {
         valueInput: true,
         password: true
-    }
+    };
 
     const handleChange = (e) => {
         let { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
-        })
-    }
+        });
+    };
 
-    const [objCheckInput, setobjCheckInput] = useState(defaultValidInput)
+    const [objCheckInput, setobjCheckInput] = useState(defaultValidInput);
 
     const isValidInputs = () => {
         let valueCheck = { ...formData };
-        setobjCheckInput(defaultValidInput) // reset lai input ve true
+        setobjCheckInput(defaultValidInput); // reset lai input ve true
         if (!valueCheck.valueInput) {
-            setobjCheckInput({ ...defaultValidInput, valueInput: false })
+            setobjCheckInput({ ...defaultValidInput, valueInput: false });
             toast.error("Bạn cần nhập Email hoặc Số điện thoại");
             return false;
         }
         if (!valueCheck.password) {
-            setobjCheckInput({ ...defaultValidInput, password: false })
+            setobjCheckInput({ ...defaultValidInput, password: false });
             toast.error("Password không được để trống");
             return false;
         }

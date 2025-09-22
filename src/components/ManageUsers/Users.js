@@ -49,7 +49,7 @@ const Users = (props) => {
         if (!session) {
             history.push("/login");
         } else {
-            setUserLoginId(session.response.DT.userId);
+            setUserLoginId(session.account.userId);
         }
     }, []);
 
@@ -80,7 +80,6 @@ const Users = (props) => {
     };
 
     const openModal = (action, user, userLoginId) => {
-        // let name = e.target.name;
         if (action === "delete") {
             setDataUserSelect({ user: user, userLoginId: userLoginId });
             setIsOpenModalDelete(true);
