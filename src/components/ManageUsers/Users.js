@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useHistory } from 'react-router-dom'
 import "./Users.scss"
 import userService from '../../services/userService'
@@ -6,10 +6,14 @@ import ReactPaginate from 'react-paginate';
 import { toast } from "react-toastify";
 import ModalConfirm from "../Modal/ModalConfirm";
 import ModalUser from "../Modal/ModalUser";
+import { UserContext } from '../../context/UserContext';
+
+
 
 const Users = (props) => {
 
     let history = useHistory();
+    let { user } = useContext(UserContext);
     const [pageCount, setPageCount] = useState(0); // Tổng số trang
     const [currentPage, setCurrentPage] = useState(1);  // Vị trí mục hiện tại
     const [count, setCount] = useState(0); // Tổng số mục
@@ -44,18 +48,17 @@ const Users = (props) => {
     }
 
     useEffect(() => {
-        //gọi dữ liệu dưới sessionStorage lên để validate đăng nhập
-        let session = JSON.parse(sessionStorage.getItem("account"));
-        if (!session) {
+
+        console.log(">>> check user: ", user);
+        if (!user) {
             history.push("/login");
         } else {
-            setUserLoginId(session.account.userId);
+            setUserLoginId(user.account.userId);
         }
     }, []);
 
     useEffect(() => {
-        let session = JSON.parse(sessionStorage.getItem("account"));
-        if (session) {
+        if (user && user.Authenticated === true) {
             fetchUsers(limit, currentPage);
             if (count === limit) {
                 setCurrentPage(1);

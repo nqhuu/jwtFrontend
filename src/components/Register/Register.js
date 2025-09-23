@@ -37,10 +37,7 @@ const Register = (props) => {
 
 
     useEffect(() => {
-        // let session = JSON.parse(sessionStorage.getItem("account"));
-        // if (session) {
-        //     history.push("/")
-        // }
+
     }, []);
 
     const handleEnter = async (e) => {

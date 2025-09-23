@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 
-const UserContext = React.createContext({ name: '', auth: false });
+const UserContext = React.createContext(null);
 const UserProvider = ({ children }) => {
-    const [user, setUser] = React.useState({
+    const [user, setUser] = useState({
         Authenticated: false,
         token: "",
         account: {}
@@ -17,7 +17,6 @@ const UserProvider = ({ children }) => {
             token: "",
             account: {}
         });
-        // sessionStorage.removeItem("account");
     }
     return (
         <UserContext.Provider value={{ user, loginContext, logout }}>

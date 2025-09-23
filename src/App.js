@@ -11,24 +11,19 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 function App() {
 
-  let [account, setAccount] = useState("");
+
 
   useEffect(() => {
-    let session = JSON.parse(sessionStorage.getItem("account"));
-    if (session) {
-      setAccount({
-        ...session
-      })
-    }
+
   }, [])
 
   return (
     <Router>
       <div className="app-container">
         {/* Sư dụng hàm  isEmpty của thư viện lodash để check rỗng, rỗng trả về true*/}
-        {account && !_.isEmpty(account) && account.Authenticated &&
-          <Nav />
-        }
+        {/* {account && !_.isEmpty(account) && account.Authenticated && */}
+        <Nav />
+        {/* // } */}
         <AppRoutes />
       </div>
       <ToastContainer

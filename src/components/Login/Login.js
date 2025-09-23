@@ -4,7 +4,6 @@ import { useEffect, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import userService from '../../services/userService';
 import { UserContext } from '../../context/UserContext';
-import { getRoles } from '@testing-library/react';
 
 
 
@@ -19,10 +18,7 @@ const Login = (props) => {
     });
 
     useEffect(() => {
-        let session = JSON.parse(sessionStorage.getItem("account"));
-        if (session) {
-            history.push("/")
-        }
+
     }, []);
 
     const handleCreateUser = () => {
@@ -43,15 +39,12 @@ const Login = (props) => {
                     let userId = response.DT.userId;
                     toast.success(response.EM)
                     let data = {
-                        isAuthenticated: true,
+                        Authenticated: true,
                         token: token,
                         account: { email, username, role, userId }
                     }
-                    //lưu dữ liệu user xuống sessionStorage
-                    sessionStorage.setItem("account", JSON.stringify(data));
                     loginContext(data);
                     history.push("/users");
-                    // window.location.reload();
                 }
                 if (response && response.EC !== 0) {
                     toast.error(response.EM)
