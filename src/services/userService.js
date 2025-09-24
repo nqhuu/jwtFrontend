@@ -25,10 +25,12 @@ const deleteUser = async (id, userLoginId) => {
 }
 
 const fetchAllGroups = async () => {
-    console.log("fetchAllGroups")
     return await axios.get(`/group/read`);
 }
 
+const getUserAccount = async () => {
+    return await axios.get(`/account`);
+}
 
 
 export default {
@@ -38,5 +40,6 @@ export default {
     deleteUser,
     createUser,
     updateUser,
-    fetchAllGroups
+    fetchAllGroups,
+    getUserAccount,
 }

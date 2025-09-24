@@ -1,15 +1,13 @@
 import { Route, Redirect } from "react-router-dom";
 import { useEffect, useContext } from "react";
-import { useHistory } from 'react-router-dom'
 import Login from "../components/Login/Login";
 import { UserContext } from "../context/UserContext";
 
 
 const PrivateRoutes = (props) => {
     const { user } = useContext(UserContext);
-
     useEffect(() => {
-        console.log(">>> check user: ", user);
+
     }, []);
 
     if ((user && user.Authenticated === true)) {

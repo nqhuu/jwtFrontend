@@ -48,8 +48,6 @@ const Users = (props) => {
     }
 
     useEffect(() => {
-
-        console.log(">>> check user: ", user);
         if (!user) {
             history.push("/login");
         } else {
