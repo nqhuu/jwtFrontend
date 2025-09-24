@@ -1,23 +1,25 @@
 import React, { useContext, useState, useEffect } from 'react';
 import userService from '../services/userService';
-import { useLocation } from 'react-router-dom'
 
 
 const UserContext = React.createContext(null);
 const UserProvider = ({ children }) => {
 
-    const [user, setUser] = useState({
+
+    const userDefault = {
         Authenticated: false,
         token: "",
         account: {},
         isLoading: true
-    });
+    }
+
+    const [user, setUser] = useState(userDefault);
 
 
     useEffect(() => {
-        // if (window.location.pathname !== "/") {
-        fetchUserAccount();
-        // }
+        if (window.location.pathname !== "/" || window.location.pathname !== "/login" || window.location.pathname !== "/register") {
+            fetchUserAccount();
+        }
     }, []);
 
     const fetchUserAccount = async () => {
@@ -36,10 +38,12 @@ const UserProvider = ({ children }) => {
                 isLoading: false
             }
             setUser(data);
+        } else {
+            setUser({
+                ...userDefault,
+                isLoading: false
+            })
         }
-        // if (response && response.EC !== 0) {
-        //     toast.error(response.EM)
-        // }
     }
 
     const loginContext = (data) => {

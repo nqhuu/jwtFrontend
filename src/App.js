@@ -8,28 +8,28 @@ import AppRoutes from './Routes/AppRoutes';
 import { UserContext } from "./context/UserContext";
 import _ from "lodash"
 import { BrowserRouter as Router } from "react-router-dom";
-import { Audio } from 'react-loader-spinner';
+import { Rings } from 'react-loader-spinner';
 
 function App() {
 
   let { user } = useContext(UserContext);
 
   useEffect(() => {
-    console.log(user);
 
   }, [])
 
   return (
     <Router>
       <>
-        {user && user.Authenticated && user.isLoading ?
-          <div className='loading'>
-            <Audio
+        {user && user.isLoading ?
+          <div className="loading-container">
+            <Rings
               heigth="100"
               width="100"
-              color='grey'
+              color='blue'
               ariaLabel='loading'
             />
+            <div>Loading...</div>
           </div>
           :
           <>

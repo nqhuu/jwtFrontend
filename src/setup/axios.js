@@ -45,8 +45,8 @@ instance.interceptors.response.use(function onFulfilled(response) {
     switch (status) {
         // authentication (token related issues)
         case 401: {
-            toast.error("Bạn cần đăng nhập...")
-            return Promise.reject(err);
+            // toast.error("Bạn cần đăng nhập...")
+            return err.response.data;
         }
 
         // forbidden (permission related issues)
