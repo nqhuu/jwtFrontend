@@ -14,8 +14,9 @@ const instance = axios.create({
 // cho phép set cookie từ phía server, khi gửi dữ liệu từ fe xuống be thì sẽ gửi kèm cookie
 instance.defaults.withCredentials = true;
 
-// // Alter defaults after instance has been created
-// instance.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+// Alter defaults after instance has been created 
+// Sử dụng token từ localstorage gắn vào header của request gửi đi với key là Authorization Bearer
+instance.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem("jwt")}`;
 
 
 // // Add a request interceptor

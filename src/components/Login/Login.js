@@ -43,7 +43,9 @@ const Login = (props) => {
                         token: token,
                         account: { email, username, role, userId }
                     }
-                    loginContext(data);
+
+                    localStorage.setItem("jwt", token); // lưu token vào localstorage
+                    loginContext(data); // set data vào context
                     history.push("/users");
                 }
                 if (response && response.EC !== 0) {
