@@ -10,7 +10,7 @@ const Nav = (props) => {
     const { user } = useContext(UserContext);
     const location = useLocation();
 
-    if (user && user.Authenticated === true || location.pathname === "/") {
+    if (user && user.Authenticated === true || location.pathname === "/" || location.pathname === "/about" || location.pathname === "/contact") {
         return (
             <div className="topnav">
                 <NavLink className="" to="/" exact>Home</NavLink>

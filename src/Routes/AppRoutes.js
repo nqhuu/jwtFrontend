@@ -7,22 +7,15 @@ import { Switch, Route, } from "react-router-dom";
 
 const AppRoutes = () => {
     return (<Switch>
-        <PrivateRoutes path="/news" />
-
-        <Route path="/about">
-            {/* <Users /> */}
+        <Route path="/about" exact>
             about
         </Route>
-        <Route path="/contact">
-            {/* <Users /> */}
+        <Route path="/contact" exact>
             contact
         </Route>
         <Route path="/" exact>
-            {/* <Home /> */}
             Home
         </Route>
-        {/* <PrivateRoutes path="/" component={Home} /> */}
-
         <Route path="/login" exact>
             <Login />
         </Route>

@@ -46,6 +46,7 @@ instance.interceptors.response.use(function onFulfilled(response) {
         // authentication (token related issues)
         case 401: {
             // toast.error("Bạn cần đăng nhập...")
+            console.log(err.response.data);
             return err.response.data;
         }
 

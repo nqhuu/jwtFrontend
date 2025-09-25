@@ -47,7 +47,7 @@ const UserProvider = ({ children }) => {
     }
 
     const loginContext = (data) => {
-        setUser(data);
+        setUser({ ...data, isLoading: false });
     }
 
     const logout = () => {
